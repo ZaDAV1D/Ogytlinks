@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="he">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OGYT Links</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg-dark:#06040a;
+  --accent:#00ffcc; /* green */
+  --accent-2:#66ffdd; /* green light */
+  --glass: rgba(255,255,255,0.04);
+  --glass-strong: rgba(255,255,255,0.06);
+  --particle: 0,255,200; /* rgb for JS particles */
+}
+
+body {
+  margin:0;
+  font-family: 'Rubik', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+  /* revert to simpler radial accents similar to original design */
+  background: radial-gradient(1200px 600px at 10% 10%, rgba(0,255,200,0.06), transparent 8%), radial-gradient(800px 400px at 90% 90%, rgba(0,170,255,0.04), transparent 10%), var(--bg-dark);
+  overflow:hidden;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  min-height:100vh;
+  color:white;
+  text-align:center;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+
+/* enhanced animated background blobs with gentle parallax */
+:root{ --mx:0px; --my:0px; }
+body::before,
+body::after{
+  content:'';
+  position:fixed;
+  left:50%; top:50%;
+  width:90vmax; height:90vmax;
+  transform:translate(calc(-50% + var(--mx)), calc(-50% + var(--my))) scale(1.05);
+  filter: blur(100px) saturate(130%);
+  z-index:-2;
+  pointer-events:none;
+  opacity:0.95;
+}
+body::before{
+  background: radial-gradient(circle at 30% 35%, rgba(0,255,200,0.18), transparent 20%), radial-gradient(circle at 8% 80%, rgba(0,200,170,0.08), transparent 30%);
+  animation: blobDrift 20s ease-in-out infinite;
+}
+body::after{
+  background: radial-gradient(circle at 70% 60%, rgba(0,200,170,0.10), transparent 18%), radial-gradient(circle at 88% 18%, rgba(0,255,200,0.06), transparent 28%);
+  animation: blobDriftAlt 26s ease-in-out infinite;
+  mix-blend-mode: screen;
+}
+
+/* subtle noise overlay to add texture */
+.bg-noise{ background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='1' fill='white'/></svg>"); background-repeat: repeat; opacity:0.03; }
+
+@keyframes blobDrift{ 0%{ transform:translate(calc(-50% + var(--mx)), calc(-50% + var(--my))) scale(1); } 50%{ transform:translate(calc(-51% + calc(var(--mx) * 0.6)), calc(-52% + calc(var(--my) * 0.6))) scale(1.06);} 100%{ transform:translate(calc(-50% + var(--mx)), calc(-50% + var(--my))) scale(1); } }
+@keyframes blobDriftAlt{ 0%{ transform:translate(calc(-50% + var(--mx)), calc(-50% + var(--my))) scale(1); } 50%{ transform:translate(calc(-49% + calc(var(--mx) * 0.4)), calc(-48% + calc(var(--my) * 0.4))) scale(1.04);} 100%{ transform:translate(calc(-50% + var(--mx)), calc(-50% + var(--my))) scale(1); } }
+
+@media (prefers-reduced-motion: reduce){
+  body::before, body::after{ animation:none !important; }
+}
+
+/* אור אחרי העכבר */
+.cursor-light{
+  position:fixed;
+  width:72px; height:72px;
+  background: radial-gradient(circle at 35% 35%, rgba(0,255,200,0.16), rgba(0,170,255,0.06) 45%, transparent 65%);
+  border-radius:50%;
+  pointer-events:none;
+  transform:translate(-50%,-50%);
+  z-index:999;
+  mix-blend-mode: screen;
+  transition: transform 0.08s ease, opacity 0.18s ease;
+  filter: blur(6px);
+  opacity:0.95;
+  will-change: transform, opacity;
+}
+
+/* פטיש */
+#hammer{
+  font-size:70px;
+  color:var(--accent);
+  text-shadow:0 0 15px var(--accent),0 0 35px var(--accent-2),0 0 60px rgba(160,255,204,0.6);
+  position:absolute;
+  opacity:0;
+  transform:translate(-50%,-50%) rotate(-45deg);
+  z-index:10;
+  transition: all 0.15s ease;
+}
+
+/* קונטיינר מרכזי */
+.container-frame{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:30px;
+  padding:40px 30px;
+  max-width:450px;
+  width:90%;
+  border-radius:25px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  backdrop-filter: blur(12px) saturate(120%);
+  border: 1px solid rgba(255,255,255,0.04);
+  box-shadow: 0 18px 50px rgba(10,8,15,0.7), 0 0 60px rgba(0,255,200,0.06) inset;
+  opacity:0;
+  transform: translateY(20px) scale(0.92);
+  z-index:10;
+  transition: all 0.6s ease;
+  will-change: transform, opacity;
+}
+
+/* container open state for entrance animation */
+.container-frame.open{
+  opacity:1;
+  transform: translateY(0) scale(1);
+  transition: transform 700ms cubic-bezier(.2,.9,.2,1), opacity 520ms ease;
+  filter: none;
+}
+
+/* פרופיל */
+.profile img{
+  width:150px; height:150px;
+  border-radius:50%;
+  border:5px solid rgba(0,255,200,0.95);
+  object-fit:cover;
+  margin-bottom:15px;
+  box-shadow:0 12px 40px rgba(5,5,10,0.6), 0 0 36px rgba(0,255,200,0.12);
+  transform-origin:center;
+  animation:floatImg 6s ease-in-out infinite;
+}
+
+@keyframes floatImg{
+  0%{ transform:translateY(0) }
+  50%{ transform:translateY(-6px) }
+  100%{ transform:translateY(0) }
+}
+
+h1{
+  margin:6px 0;
+  font-size:48px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.subtitle{
+  font-size:20px;
+  color: rgba(229,229,255,0.9);
+  margin-bottom:20px;
+}
+
+/* כפתורים */
+.links{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:20px;
+  width:100%;
+}
+
+.link-btn{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  width:100%;
+  max-width:400px;
+  padding:20px 30px;
+  background: linear-gradient(135deg, rgba(0,255,200,0.12) 0%, rgba(0,170,255,0.10) 100%);
+  color:var(--accent-2);
+  font-size:22px;
+  font-weight:700;
+  text-decoration:none;
+  border-radius:28px;
+  border:1px solid rgba(255,255,255,0.04);
+  box-shadow: 0 12px 30px rgba(2,6,8,0.6), 0 6px 18px rgba(0,0,0,0.35) inset;
+  position:relative;
+  overflow:hidden;
+  opacity:0;
+  transform: translateY(30px) scale(0.96);
+  transition: transform 0.25s cubic-bezier(.2,.9,.2,1), box-shadow 0.22s ease, opacity 0.45s ease, background 0.35s ease;
+  will-change: transform, box-shadow, opacity;
+}
+
+/* revealed state for buttons (added by JS) */
+.link-btn.revealed{
+  opacity:1;
+  transform: translateY(0) scale(1);
+  animation: btnPop 420ms cubic-bezier(.2,.9,.2,1);
+}
+
+@keyframes btnPop{
+  0%{ transform: translateY(14px) scale(0.94); opacity:0; }
+  60%{ transform: translateY(-6px) scale(1.04); opacity:1; }
+  100%{ transform: translateY(0) scale(1); }
+}
+
+.link-btn i{
+  font-size:1.5em;
+  transition: transform 0.28s cubic-bezier(.2,.9,.2,1);
+}
+
+.link-btn:hover{
+  transform: translateY(-6px) scale(1.04);
+  box-shadow:0 26px 80px rgba(0,255,200,0.14), 0 8px 30px rgba(0,0,0,0.6);
+  background: linear-gradient(135deg, rgba(0,255,200,0.18) 0%, rgba(0,170,255,0.16) 100%);
+}
+
+.link-btn:hover i{ transform: translateX(-6px) scale(1.06); }
+
+/* subtle pulse on hover to give more life */
+.link-btn:hover::before{
+  content:''; position:absolute; inset:0; border-radius:inherit; box-shadow:0 0 40px rgba(0,255,200,0.06) inset; pointer-events:none; opacity:1;
+}
+
+/* stronger shine when focused/active */
+.link-btn:active, .link-btn.touch-active{ transform: translateY(-2px) scale(1.02); }
+
+
+.link-btn:focus{
+  outline:3px solid rgba(0,255,200,0.12);
+  outline-offset:4px;
+}
+
+.link-btn::after{
+  content:'';
+  position:absolute;
+  left: -40%; top:0;
+  width:40%; height:100%;
+  background: linear-gradient(120deg, rgba(255,255,255,0.15), rgba(255,255,255,0.03));
+  transform: skewX(-18deg) translateX(0);
+  transition: transform 0.5s cubic-bezier(.2,.9,.2,1);
+  pointer-events:none;
+  opacity:0.6;
+}
+.link-btn:hover::after{ transform: translateX(200%); opacity:0.9 }
+
+/* ripple effect for touch interactions */
+.link-btn .ripple{
+  position:absolute;
+  width:18px; height:18px;
+  background: rgba(255,255,255,0.16);
+  border-radius:50%;
+  transform:translate(-50%,-50%) scale(0);
+  pointer-events:none;
+  box-shadow:0 6px 20px rgba(0,0,0,0.3), 0 0 20px rgba(255,255,255,0.06);
+  animation:rippleAnim 520ms cubic-bezier(.2,.9,.2,1) forwards;
+}
+@keyframes rippleAnim{ to{ transform:translate(-50%,-50%) scale(12); opacity:0; } }
+
+/* קרדיט */
+.credit{
+  margin-top:20px;
+  font-size:15px;
+  color:rgba(255,255,255,0.7);
+  text-align:center;
+  letter-spacing:0.4px;
+}
+
+/* canvas רקע רשת */
+canvas#network-bg{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  z-index:0;
+}
+
+/* ניצוצות */
+.spark{
+  position:absolute;
+  width:8px; height:8px;
+  background:rgba(0,255,200,0.9);
+  border-radius:50%;
+  pointer-events:none;
+  opacity:0;
+  z-index:100;
+  box-shadow:0 0 12px rgba(0,255,200,1);
+  animation:sparkAnim 0.8s ease-out forwards;
+}
+
+@keyframes sparkAnim{
+  0%{transform:scale(0); opacity:1;}
+  100%{transform:translate(var(--x),var(--y)) scale(1); opacity:0;}
+}
+
+/* התאמות מובייל בלבד */
+@media (max-width:600px){
+  .container-frame{
+    max-width:320px;
+    padding:20px 15px;
+    gap:15px;
+  }
+  .profile img{
+    width:100px;
+    height:100px;
+    margin-bottom:10px;
+  }
+  h1{
+    font-size:28px;
+  }
+  .subtitle{
+    font-size:16px;
+    margin-bottom:12px;
+  }
+  .link-btn{
+    font-size:18px;
+    padding:16px 20px;
+    max-width:100%;
+    width:100%;
+    gap:12px;
+    border-radius:14px;
+    min-height:56px;
+    justify-content:flex-start;
+    padding-left:22px;
+  }
+  .credit{
+    font-size:14px;
+  }
+}
+
+@media (max-width:420px){
+  body{ padding:10px; }
+  .container-frame{ padding:16px; border-radius:18px; }
+  .profile img{ width:86px; height:86px; }
+  .link-btn{ font-size:16px; padding:14px 18px; min-height:52px; }
+  #hammer{ font-size:54px; top:10px; }
+  .cursor-light{ display:none; }
+  canvas#network-bg{ opacity:0.85; }
+}
+
+/* reduce visual intensity on mobile */
+@media (max-width:800px){
+  body::before, body::after{ filter: blur(80px) saturate(110%); }
+  .container-frame{ box-shadow: 0 8px 26px rgba(0,0,0,0.55); }
+  .link-btn{ box-shadow: 0 8px 20px rgba(0,0,0,0.45) inset; }
+}
+
+/* שיפורי נגישות ומגע - גדלי טאפ טובים יותר למובייל */
+@media (max-width:700px){
+  .container-frame{ width:95%; padding:18px; }
+  .links{ gap:14px; }
+  .link-btn{ max-width:100%; padding:16px 20px; font-size:18px; border-radius:14px; }
+}
+
+/* הסתרת אפקט העכבר במכשירי מגע */
+@media (hover: none) and (pointer: coarse){
+  .cursor-light{ display:none; }
+}
+
+/* אפקט מגע שמחקה hover/shine */
+.link-btn.active{ transform: translateY(-3px) scale(1.02); box-shadow:0 18px 48px rgba(0,255,200,0.18), 0 6px 20px rgba(0,0,0,0.6); }
+.link-btn.touch-active::after{ transform: translateX(200%); opacity:0.95; transition: transform 0.28s ease; }
+
+/* למשתמשים שמעדיפים תנועה מופחתת */
+@media (prefers-reduced-motion: reduce){
+  *{ transition: none !important; animation: none !important; }
+}
+</style>
+</head>
+<body>
+
+<canvas id="network-bg"></canvas>
+<div class="bg-noise" aria-hidden="true"></div>
+<div class="cursor-light" id="cursorLight"></div>
+<i id="hammer" class="fa-solid fa-hammer"></i>
+
+<div class="container-frame" id="containerFrame">
+  <div class="profile">
+    <img src="https://image2url.com/r2/default/images/1775305525281-c8ce95d5-a495-449b-bb12-6cae3690be54.jpg" alt="Profile">
+    <h1>OGYT</h1>
+    <div class="subtitle">OGYT קישורים של</div>
+  </div>
+
+  <div class="links">
+    <a class="link-btn" href="https://www.youtube.com/@orgala15" target="_blank" rel="noopener noreferrer"><i class="fab fa-youtube"></i> יוטיוב</a>
+    <a class="link-btn" href="https://www.youtube.com/@orgala15?sub_confirmation=1" target="_blank" rel="noopener noreferrer"><i class="fab fa-youtube"></i> לעשים סאב</a>
+    <a class="link-btn" href="https://streamelements.com/orgala14/tip" target="_blank" rel="noopener noreferrer"><i class="fas fa-coins"></i> תרומות (באישור הורים או 18+)</a>
+    <a class="link-btn" href="https://discord.gg/FhgfDndG" target="_blank" rel="noopener noreferrer"><i class="fab fa-discord"></i> דיסקורד</a>
+    <a class="link-btn" href="https://www.tiktok.com/@orgala1781" target="_blank" rel="noopener noreferrer"><i class="fab fa-tiktok"></i> טיקטוק</a>
+  </div>
+
+  <div class="credit">crate by ZaDAV1D</div>
+</div>
+
+<script>
+// אור אחרי העכבר
+const cursor=document.getElementById("cursorLight");
+document.addEventListener("mousemove", e=>{
+  cursor.style.left=e.clientX+'px';
+  cursor.style.top=e.clientY+'px';
+  cursor.style.transform='translate(-50%,-50%) scale(1.2)';
+  setTimeout(()=>cursor.style.transform='translate(-50%,-50%) scale(1)',100);
+});
+
+// פטיש
+const hammer=document.getElementById('hammer');
+const container=document.getElementById('containerFrame');
+const buttons=document.querySelectorAll('.link-btn');
+
+function createSpark(x,y,amount=1){
+  for(let i=0;i<amount;i++){
+    const spark=document.createElement('div');
+    spark.className='spark';
+    spark.style.left=x+'px';
+    spark.style.top=y+'px';
+    spark.style.setProperty('--x',(Math.random()-0.5)*150+'px');
+    spark.style.setProperty('--y',(Math.random()-0.5)*150+'px');
+    document.body.appendChild(spark);
+    setTimeout(()=>spark.remove(),800);
+  }
+}
+
+async function hammerBuild(){
+  // position hammer above the container center
+  hammer.style.opacity = 1;
+  const rect = container.getBoundingClientRect();
+  hammer.style.left = rect.left + rect.width/2 + 'px';
+  hammer.style.top = rect.top - 50 + 'px';
+
+  // quick build-in swings
+  for(let i=0;i<2;i++){
+    hammer.style.transform='translate(-50%,-50%) rotate(-20deg) scale(1.06)';
+    await new Promise(r=>setTimeout(r,140));
+    hammer.style.transform='translate(-50%,-50%) rotate(8deg) scale(1)';
+    await new Promise(r=>setTimeout(r,140));
+  }
+
+  // reveal container gracefully
+  container.classList.add('open');
+
+  // staggered reveal for buttons with nicer timing
+  for(let i=0;i<buttons.length;i++){
+    const btn = buttons[i];
+    const br = btn.getBoundingClientRect();
+    // hammer hits above button
+    hammer.style.left = br.left + br.width/2 + 'px';
+    hammer.style.top = br.top - 40 + 'px';
+    hammer.style.transform='translate(-50%,-50%) rotate(-20deg) scale(1.06)';
+    await new Promise(r=>setTimeout(r,120));
+    hammer.style.transform='translate(-50%,-50%) rotate(8deg) scale(1)';
+    await new Promise(r=>setTimeout(r,120));
+
+    // reveal button with pop
+    btn.classList.add('revealed');
+    createSpark(br.left+br.width/2, br.top+br.height/2,10);
+  }
+
+  // fade hammer out
+  hammer.style.opacity = 0;
+}
+
+window.addEventListener('load', hammerBuild);
+// prepare buttons for animation state
+for(const b of buttons){ b.setAttribute('aria-hidden','true'); b.style.pointerEvents='none'; }
+
+// when button revealed remove aria-hidden & enable pointer events
+const observer = new MutationObserver((muts)=>{
+  muts.forEach(m=>{
+    if(m.type==='attributes' && m.target.classList && m.target.classList.contains('revealed')){
+      m.target.removeAttribute('aria-hidden');
+      m.target.style.pointerEvents='auto';
+    }
+  });
+});
+buttons.forEach(b=>observer.observe(b,{attributes:true}));
+
+// parallax for background blobs: update CSS variables based on mouse
+if (typeof window !== 'undefined' && window.document){
+  const root = document.documentElement;
+  let lastX=0, lastY=0;
+  document.addEventListener('mousemove', (e)=>{
+    const mx = (e.clientX - window.innerWidth/2) * 0.02;
+    const my = (e.clientY - window.innerHeight/2) * 0.02;
+    lastX = mx; lastY = my;
+    root.style.setProperty('--mx', mx+'px');
+    root.style.setProperty('--my', my+'px');
+  }, {passive:true});
+
+  // fallback for devices with gyroscope
+  if(window.DeviceOrientationEvent){
+    window.addEventListener('deviceorientation', (ev)=>{
+      const gx = ev.gamma || 0; const gy = ev.beta || 0;
+      const mx = gx * 1.2; const my = gy * 0.9;
+      root.style.setProperty('--mx', mx+'px');
+      root.style.setProperty('--my', my+'px');
+    }, {passive:true});
+  }
+}
+
+// canvas רשת חלקיקים
+const canvas=document.getElementById('network-bg');
+const ctx=canvas.getContext('2d');
+function resizeCanvas(){
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = Math.round(window.innerWidth * dpr);
+  canvas.height = Math.round(window.innerHeight * dpr);
+  canvas.style.width = window.innerWidth + 'px';
+  canvas.style.height = window.innerHeight + 'px';
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+}
+resizeCanvas();
+let particles=[];
+// smoothed parallax targets for gentler motion
+let smoothMx = 0, smoothMy = 0;
+function initParticles(){
+  particles.length=0;
+  const area = window.innerWidth*window.innerHeight;
+  let count = Math.floor(area/120000);
+  if(count<30) count=30;
+  if(count>120) count=120;
+  const w = window.innerWidth;
+  const h = window.innerHeight;
+  for(let i=0;i<count;i++) particles.push({x:Math.random()*w,y:Math.random()*h,vx:(Math.random()-0.5)*1.1,vy:(Math.random()-0.5)*1.1});
+}
+initParticles();
+function drawNetwork(){
+  // clear
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  // compute subtle animated offset for the grid (time + parallax from CSS vars)
+  const reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const cs = getComputedStyle(document.documentElement);
+  const targetMx = parseFloat(cs.getPropertyValue('--mx') || '0') || 0;
+  const targetMy = parseFloat(cs.getPropertyValue('--my') || '0') || 0;
+  // smooth the pointer/gyro values for more fluid motion
+  smoothMx += (targetMx - smoothMx) * 0.12;
+  smoothMy += (targetMy - smoothMy) * 0.12;
+  const t = performance.now() / 1000;
+  // faster, smooth drift
+  const driftX = Math.sin(t * 0.9) * 36 + smoothMx * 1.1;
+  const driftY = Math.cos(t * 0.75) * 30 + smoothMy * 1.1;
+
+  // draw subtle background grid lines for depth (lighter on small screens / reduced motion)
+  if(!reduced){
+    ctx.save();
+    ctx.fillStyle = 'rgba(0,255,200,0.04)';
+    const gap = Math.max(28, Math.floor(Math.min(window.innerWidth, window.innerHeight) / 22));
+    const sq = Math.max(6, Math.floor(gap * 0.28));
+    // start positions offset by drifting values for motion (use viewport coords)
+    const startX = Math.round((driftX % gap + gap) % gap) - gap;
+    const startY = Math.round((driftY % gap + gap) % gap) - gap;
+    for(let x = startX; x < window.innerWidth + gap; x += gap){
+      for(let y = startY; y < window.innerHeight + gap; y += gap){
+        // draw a soft square (centered within cell)
+        ctx.globalAlpha = 1.0;
+        ctx.fillRect(x + (gap - sq) / 2, y + (gap - sq) / 2, sq, sq);
+      }
+    }
+    ctx.globalAlpha = 1.0;
+    ctx.restore();
+  }
+
+  // particles and connecting lines
+    for(let i=0, len = particles.length;i<len;i++){
+    let p=particles[i];
+    ctx.fillStyle='rgba(var(--particle),0.85)';
+    ctx.beginPath(); ctx.arc(p.x,p.y,1.6,0,Math.PI*2); ctx.fill();
+    for(let j=i+1;j<particles.length;j++){
+      let q=particles[j];
+      let dx=p.x-q.x, dy=p.y-q.y;
+      let dist=Math.sqrt(dx*dx+dy*dy);
+      // increased threshold for more lines, with smoother alpha falloff
+      const maxDist = 160;
+      if(dist < maxDist){
+        const alpha = Math.max(0, 0.55 * (1 - dist / maxDist));
+        ctx.strokeStyle = 'rgba(var(--particle),'+alpha+')';
+        ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(q.x,q.y); ctx.stroke();
+      }
+    }
+    p.x+=p.vx; p.y+=p.vy;
+    if(p.x<0||p.x>canvas.width)p.vx*=-1;
+    if(p.y<0||p.y>canvas.height)p.vy*=-1;
+  }
+
+  requestAnimationFrame(drawNetwork);
+}
+drawNetwork();
+window.addEventListener('resize',()=>{canvas.width=window.innerWidth;canvas.height=window.innerHeight; initParticles(); } );
+
+// מניעת F12 / Ctrl+Shift+I / Tab / העתקה
+document.addEventListener('keydown', function(e) {
+    if(e.key === "F12") e.preventDefault();
+    if(e.ctrlKey && e.shiftKey && (e.key === "I" || e.key === "J")) e.preventDefault();
+    if(e.ctrlKey && e.key === "U") e.preventDefault();
+    if(e.ctrlKey && (e.key === "c" || e.key === "x" || e.key === "v")) e.preventDefault();
+    if(e.key === "Tab") e.preventDefault();
+});
+document.addEventListener('contextmenu', function(e){ e.preventDefault(); });
+document.addEventListener('dragstart', function(e){ e.preventDefault(); });
+document.addEventListener('selectstart', function(e){ e.preventDefault(); });
+
+// שיפורי מגע ונגישות לכפתורים
+const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+buttons.forEach(btn=>{
+  // keyboard accessibility: add focus style
+  btn.addEventListener('focus', ()=>btn.classList.add('active'));
+  btn.addEventListener('blur', ()=>btn.classList.remove('active'));
+
+  // pointer enter/leave for devices that support hover
+  btn.addEventListener('pointerenter', ()=>{ if(!btn.classList.contains('touching')) btn.classList.add('active'); });
+  btn.addEventListener('pointerleave', ()=>{ btn.classList.remove('active'); btn.classList.remove('touch-active'); });
+
+  // touch handlers to mimic hover + ripple
+  btn.addEventListener('touchstart', (ev)=>{
+    btn.classList.add('touching','active','touch-active');
+    // create ripple
+    const t = ev.touches[0];
+    const rect = btn.getBoundingClientRect();
+    const rx = t.clientX - rect.left;
+    const ry = t.clientY - rect.top;
+    const rip = document.createElement('div'); rip.className='ripple';
+    rip.style.left=rx+'px'; rip.style.top=ry+'px';
+    btn.appendChild(rip);
+    setTimeout(()=>{ rip.remove(); }, 700);
+  }, {passive:true});
+
+  btn.addEventListener('touchend', ()=>{ btn.classList.remove('touching'); if(!prefersReduced) setTimeout(()=>btn.classList.remove('active','touch-active'),150); else { btn.classList.remove('active','touch-active'); } });
+  btn.addEventListener('touchcancel', ()=>{ btn.classList.remove('touching','active','touch-active'); });
+});
+</script>
+</body>
+</html>
