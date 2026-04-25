@@ -310,8 +310,8 @@ function createSpark(x,y,amount=1){
   for(let i=0;i<amount;i++){
     const spark=document.createElement('div');
     spark.className='spark';
-    spark.style.left=x+'px';
-    spark.style.top=y+'px';
+    spark.style.left=(x - 4)+'px';
+    spark.style.top=(y - 4)+'px';
     spark.style.setProperty('--x',(Math.random()-0.5)*150+'px');
     spark.style.setProperty('--y',(Math.random()-0.5)*150+'px');
     document.body.appendChild(spark);
@@ -319,41 +319,90 @@ function createSpark(x,y,amount=1){
   }
 }
 
-async function hammerBuild(){
-  hammer.style.opacity=1;
-  const rect=container.getBoundingClientRect();
-  hammer.style.left=rect.left+rect.width/2+'px';
-  hammer.style.top=rect.top-50+'px';
-
-  for(let i=0;i<3;i++){
-    hammer.style.transform='translate(-50%,-50%) rotate(-20deg) scale(1.1)';
-    await new Promise(r=>setTimeout(r,300));
-    hammer.style.transform='translate(-50%,-50%) rotate(10deg) scale(1)';
-    await new Promise(r=>setTimeout(r,300));
-  }
-
-  container.style.opacity=1;
-  container.style.transform='scale(1)';
-  await new Promise(r=>setTimeout(r,300));
-
-  for(let btn of buttons){
-    const br=btn.getBoundingClientRect();
-    hammer.style.left=br.left+br.width/2+'px';
-    hammer.style.top=br.top-40+'px';
-    hammer.style.transform='translate(-50%,-50%) rotate(-20deg) scale(1.1)';
-    await new Promise(r=>setTimeout(r,260));
-    hammer.style.transform='translate(-50%,-50%) rotate(10deg) scale(1)';
-    await new Promise(r=>setTimeout(r,260));
-
-    // reveal via class so CSS :hover 3D transforms still work
-    btn.classList.add('revealed');
-    createSpark(br.left+br.width/2, br.top+br.height/2,15);
-  }
-
-  hammer.style.opacity=0;
+// Hammer animation controller to allow cancellation/restart
+let _hammerCtrl = null;
+function cancelHammer(){
+  if(_hammerCtrl){ _hammerCtrl.cancel = true; _hammerCtrl = null; }
+  hammer.style.opacity = 0;
+  hammer.style.transform = 'translate(-50%,-50%) rotate(-45deg)';
 }
 
-window.addEventListener('load', hammerBuild);
+function clamp(v, a, b){ return Math.max(a, Math.min(b, v)); }
+
+async function runHammerSequence(ctrl){
+  const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(prefersReduced) return; // don't run intensive animation
+
+  const small = window.innerWidth < 520 || prefersReduced;
+
+  // helper to position hammer in viewport coords (clamped so it stays visible)
+  function setHammerPos(x, y){
+    const lx = clamp(x, 40, window.innerWidth - 40);
+    const ty = clamp(y, 40, window.innerHeight - 40);
+    hammer.style.left = lx + 'px';
+    hammer.style.top = ty + 'px';
+  }
+
+  // show hammer at center of container
+  const rect = container.getBoundingClientRect();
+  setHammerPos(rect.left + rect.width/2, rect.top + rect.height/2 - 50);
+  hammer.style.opacity = 1;
+
+  // small helper sleep that checks cancellation
+  const sleep = (ms) => new Promise(r => setTimeout(()=>{ if(ctrl.cancel) r('cancel'); else r(); }, ms));
+
+  // warm-up swings
+  for(let i=0;i<3;i++){
+    if(ctrl.cancel) return;
+    hammer.style.transform='translate(-50%,-50%) rotate(-20deg) scale(1.08)';
+    let s = await sleep(300);
+    if(s === 'cancel') return;
+    hammer.style.transform='translate(-50%,-50%) rotate(10deg) scale(1)';
+    s = await sleep(300);
+    if(s === 'cancel') return;
+  }
+
+  // reveal container and wait a bit
+  container.style.opacity = 1;
+  container.style.transform = 'scale(1)';
+  let s = await sleep(350);
+  if(s === 'cancel') return;
+
+  // iterate buttons and hammer them in sequence
+  for(let i=0;i<buttons.length;i++){
+    if(ctrl.cancel) return;
+    const btn = buttons[i];
+    const br = btn.getBoundingClientRect();
+    // position hammer slightly above button center
+    setHammerPos(br.left + br.width/2, br.top - 36);
+
+    hammer.style.transform='translate(-50%,-50%) rotate(-20deg) scale(1.06)';
+    s = await sleep(260); if(s === 'cancel') return;
+    hammer.style.transform='translate(-50%,-50%) rotate(10deg) scale(1)';
+    s = await sleep(260); if(s === 'cancel') return;
+
+    // reveal button with stagger variable and create sparks (fewer on small screens)
+    btn.style.setProperty('--i', i);
+    btn.classList.add('revealed');
+    createSpark(br.left+br.width/2, br.top+br.height/2, small ? 6 : 14);
+  }
+
+  // finish
+  hammer.style.opacity = 0;
+}
+
+function startHammer(){
+  cancelHammer();
+  const ctrl = { cancel: false };
+  _hammerCtrl = ctrl;
+  runHammerSequence(ctrl).catch(()=>{});
+}
+
+window.addEventListener('load', ()=> startHammer());
+// restart hammer on resize/scroll so positions stay correct (debounced)
+const _rs = debounce(()=> startHammer(), 420);
+window.addEventListener('resize', _rs);
+window.addEventListener('scroll', _rs, {passive:true});
 
 // canvas רשת חלקיקים
 const canvas=document.getElementById('network-bg');
@@ -430,44 +479,7 @@ if(!prefersReduced){
   });
 }
 
-// Update hammerBuild to set per-button index and limit spark intensity on small screens
-const _oldHammerBuild = hammerBuild;
-hammerBuild = async function(){
-  const small = window.innerWidth < 520 || prefersReduced;
-  hammer.style.opacity=1;
-  const rect=container.getBoundingClientRect();
-  hammer.style.left=rect.left+rect.width/2+'px';
-  hammer.style.top=rect.top-50+'px';
 
-  for(let i=0;i<3;i++){
-    hammer.style.transform='translate(-50%,-50%) rotate(-20deg) scale(1.1)';
-    await new Promise(r=>setTimeout(r,180));
-    hammer.style.transform='translate(-50%,-50%) rotate(10deg) scale(1)';
-    await new Promise(r=>setTimeout(r,180));
-  }
-
-  container.style.opacity=1;
-  container.style.transform='scale(1)';
-
-  for(let i=0;i<buttons.length;i++){
-    const btn = buttons[i];
-    const br=btn.getBoundingClientRect();
-    hammer.style.left=br.left+br.width/2+'px';
-    hammer.style.top=br.top-40+'px';
-    hammer.style.transform='translate(-50%,-50%) rotate(-20deg) scale(1.1)';
-    await new Promise(r=>setTimeout(r,150));
-    hammer.style.transform='translate(-50%,-50%) rotate(10deg) scale(1)';
-    await new Promise(r=>setTimeout(r,150));
-
-    // reveal via class so CSS :hover 3D transforms still work
-    btn.style.setProperty('--i', i);
-    btn.classList.add('revealed');
-    // fewer sparks on small screens
-    createSpark(br.left+br.width/2, br.top+br.height/2, small ? 6 : 15);
-  }
-
-  hammer.style.opacity=0;
-};
 
 // מניעת F12 / Ctrl+Shift+I / Tab / העתקה
 document.addEventListener('keydown', function(e) {
