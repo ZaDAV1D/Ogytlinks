@@ -4,66 +4,94 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>OGYT Links</title>
-<meta name="theme-color" content="#000000">
-<!-- Preconnect for Google Fonts -->
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;700&display=swap" rel="stylesheet">
-<!-- Simple SVG favicon -->
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='48' fill='%2300ffcc'/%3E%3Ctext x='50' y='58' font-size='48' text-anchor='middle' fill='%23000'>O%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#0a0a0a;
-  --accent-1: #00ffcc;
-  --accent-2: #00aaff;
-  --glass-bg: rgba(255,255,255,0.03);
-}
-
-/* subtle backdrop glow behind container */
-body::before{
-  content:'';
-  position:fixed; inset:0; z-index:0;
-  background: radial-gradient(600px 400px at 50% 30%, rgba(0,255,200,0.06), transparent 30%), radial-gradient(400px 300px at 20% 70%, rgba(0,170,255,0.03), transparent 20%);
-  pointer-events:none; filter:blur(20px);
+  --bg-dark:#06040a;
+  --accent:#00ffcc; /* green */
+  --accent-2:#66ffdd; /* green light */
+  --glass: rgba(255,255,255,0.04);
+  --glass-strong: rgba(255,255,255,0.06);
+  --particle: 0,255,200; /* rgb for JS particles */
 }
 
 body {
   margin:0;
-  font-family: 'Rubik', sans-serif;
-  background:var(--bg);
-  overflow:auto;
+  font-family: 'Rubik', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+  /* revert to simpler radial accents similar to original design */
+  background: radial-gradient(1200px 600px at 10% 10%, rgba(0,255,200,0.06), transparent 8%), radial-gradient(800px 400px at 90% 90%, rgba(0,170,255,0.04), transparent 10%), var(--bg-dark);
+  overflow:hidden;
   display:flex;
   justify-content:center;
   align-items:center;
   min-height:100vh;
   color:white;
   text-align:center;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+
+/* enhanced animated background blobs with gentle parallax */
+:root{ --mx:0px; --my:0px; }
+body::before,
+body::after{
+  content:'';
+  position:fixed;
+  left:50%; top:50%;
+  width:90vmax; height:90vmax;
+  transform:translate(calc(-50% + var(--mx)), calc(-50% + var(--my))) scale(1.05);
+  filter: blur(100px) saturate(130%);
+  z-index:-2;
+  pointer-events:none;
+  opacity:0.95;
+}
+body::before{
+  background: radial-gradient(circle at 30% 35%, rgba(0,255,200,0.18), transparent 20%), radial-gradient(circle at 8% 80%, rgba(0,200,170,0.08), transparent 30%);
+  animation: blobDrift 20s ease-in-out infinite;
+}
+body::after{
+  background: radial-gradient(circle at 70% 60%, rgba(0,200,170,0.10), transparent 18%), radial-gradient(circle at 88% 18%, rgba(0,255,200,0.06), transparent 28%);
+  animation: blobDriftAlt 26s ease-in-out infinite;
+  mix-blend-mode: screen;
+}
+
+/* subtle noise overlay to add texture */
+.bg-noise{ background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='1' fill='white'/></svg>"); background-repeat: repeat; opacity:0.03; }
+
+@keyframes blobDrift{ 0%{ transform:translate(calc(-50% + var(--mx)), calc(-50% + var(--my))) scale(1); } 50%{ transform:translate(calc(-51% + calc(var(--mx) * 0.6)), calc(-52% + calc(var(--my) * 0.6))) scale(1.06);} 100%{ transform:translate(calc(-50% + var(--mx)), calc(-50% + var(--my))) scale(1); } }
+@keyframes blobDriftAlt{ 0%{ transform:translate(calc(-50% + var(--mx)), calc(-50% + var(--my))) scale(1); } 50%{ transform:translate(calc(-49% + calc(var(--mx) * 0.4)), calc(-48% + calc(var(--my) * 0.4))) scale(1.04);} 100%{ transform:translate(calc(-50% + var(--mx)), calc(-50% + var(--my))) scale(1); } }
+
+@media (prefers-reduced-motion: reduce){
+  body::before, body::after{ animation:none !important; }
 }
 
 /* אור אחרי העכבר */
 .cursor-light{
   position:fixed;
-  width:50px; height:50px;
-  background:rgba(0,255,200,0.4);
+  width:72px; height:72px;
+  background: radial-gradient(circle at 35% 35%, rgba(0,255,200,0.16), rgba(0,170,255,0.06) 45%, transparent 65%);
   border-radius:50%;
   pointer-events:none;
   transform:translate(-50%,-50%);
   z-index:999;
   mix-blend-mode: screen;
-  transition: transform 0.1s ease;
+  transition: transform 0.08s ease, opacity 0.18s ease;
+  filter: blur(6px);
+  opacity:0.95;
+  will-change: transform, opacity;
 }
 
 /* פטיש */
 #hammer{
   font-size:70px;
-  color:var(--accent-1);
-  text-shadow:0 0 15px var(--accent-1),0 0 35px #00ffee,0 0 60px #a0ffcc;
-  position:fixed; /* use viewport coordinates so it's stable on scroll */
-  pointer-events:none; /* don't block pointer interactions */
+  color:var(--accent);
+  text-shadow:0 0 15px var(--accent),0 0 35px var(--accent-2),0 0 60px rgba(160,255,204,0.6);
+  position:absolute;
   opacity:0;
   transform:translate(-50%,-50%) rotate(-45deg);
-  z-index:995;
-  transition: all 0.18s ease;
+  z-index:10;
+  transition: all 0.15s ease;
 }
 
 /* קונטיינר מרכזי */
@@ -76,33 +104,54 @@ body {
   max-width:450px;
   width:90%;
   border-radius:25px;
-  background: rgba(0,255,200,0.06);
-  box-shadow:0 0 60px rgba(0,255,200,0.45);
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  backdrop-filter: blur(12px) saturate(120%);
+  border: 1px solid rgba(255,255,255,0.04);
+  box-shadow: 0 18px 50px rgba(10,8,15,0.7), 0 0 60px rgba(0,255,200,0.06) inset;
   opacity:0;
-  transform:scale(0.8);
+  transform: translateY(20px) scale(0.92);
   z-index:10;
-  transition: all 0.9s ease;
+  transition: all 0.6s ease;
+  will-change: transform, opacity;
+}
+
+/* container open state for entrance animation */
+.container-frame.open{
+  opacity:1;
+  transform: translateY(0) scale(1);
+  transition: transform 700ms cubic-bezier(.2,.9,.2,1), opacity 520ms ease;
+  filter: none;
 }
 
 /* פרופיל */
 .profile img{
   width:150px; height:150px;
   border-radius:50%;
-  border:5px solid rgba(0,255,200,0.9);
+  border:5px solid rgba(0,255,200,0.95);
   object-fit:cover;
   margin-bottom:15px;
-  box-shadow:0 0 30px rgba(0,255,200,0.8);
+  box-shadow:0 12px 40px rgba(5,5,10,0.6), 0 0 36px rgba(0,255,200,0.12);
+  transform-origin:center;
+  animation:floatImg 6s ease-in-out infinite;
+}
+
+@keyframes floatImg{
+  0%{ transform:translateY(0) }
+  50%{ transform:translateY(-6px) }
+  100%{ transform:translateY(0) }
 }
 
 h1{
   margin:6px 0;
   font-size:48px;
-  color:#00ffcc;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .subtitle{
   font-size:20px;
-  color:#66ffdd;
+  color: rgba(229,229,255,0.9);
   margin-bottom:20px;
 }
 
@@ -113,11 +162,9 @@ h1{
   align-items:center;
   gap:20px;
   width:100%;
-  perspective:1000px; /* enable 3D perspective for children */
 }
 
 .link-btn{
-  --rx: 0deg; --ry: 0deg; --scale: 1; /* used by JS tilt */
   display:flex;
   align-items:center;
   justify-content:center;
@@ -125,82 +172,95 @@ h1{
   width:100%;
   max-width:400px;
   padding:20px 30px;
-  background:linear-gradient(135deg,var(--accent-1) 0%,var(--accent-2) 100%);
-  color:white;
+  background: linear-gradient(135deg, rgba(0,255,200,0.12) 0%, rgba(0,170,255,0.10) 100%);
+  color:var(--accent-2);
   font-size:22px;
   font-weight:700;
   text-decoration:none;
-  border-radius:35px;
-  border:1px solid rgba(255,255,255,0.2);
-  box-shadow:0 12px 40px rgba(0,0,0,0.4);
+  border-radius:28px;
+  border:1px solid rgba(255,255,255,0.04);
+  box-shadow: 0 12px 30px rgba(2,6,8,0.6), 0 6px 18px rgba(0,0,0,0.35) inset;
   position:relative;
   overflow:hidden;
   opacity:0;
-  transform: translateY(30px) rotateX(var(--rx)) rotateY(var(--ry)) scale(var(--scale));
-  transition: transform 360ms cubic-bezier(.2,.8,.2,1), box-shadow 360ms ease, opacity 700ms ease;
-  transform-style: preserve-3d;
-  will-change: transform, box-shadow;
+  transform: translateY(30px) scale(0.96);
+  transition: transform 0.25s cubic-bezier(.2,.9,.2,1), box-shadow 0.22s ease, opacity 0.45s ease, background 0.35s ease;
+  will-change: transform, box-shadow, opacity;
 }
 
-/* revealed state (set by JS without inline transform) */
-.link-btn.revealed{ opacity:1; transform: translateY(0) scale(1); transition-delay: calc(var(--i,0) * 140ms); }
+/* revealed state for buttons (added by JS) */
+.link-btn.revealed{
+  opacity:1;
+  transform: translateY(0) scale(1);
+  animation: btnPop 420ms cubic-bezier(.2,.9,.2,1);
+}
+
+@keyframes btnPop{
+  0%{ transform: translateY(14px) scale(0.94); opacity:0; }
+  60%{ transform: translateY(-6px) scale(1.04); opacity:1; }
+  100%{ transform: translateY(0) scale(1); }
+}
 
 .link-btn i{
   font-size:1.5em;
+  transition: transform 0.28s cubic-bezier(.2,.9,.2,1);
 }
 
 .link-btn:hover{
-  /* 3D tilt fallback: strong pre-defined tilt on hover */
-  transform: perspective(800px) rotateX(8deg) rotateY(-10deg) scale(1.05);
-  box-shadow:0 22px 60px rgba(0,255,200,0.45);
+  transform: translateY(-6px) scale(1.04);
+  box-shadow:0 26px 80px rgba(0,255,200,0.14), 0 8px 30px rgba(0,0,0,0.6);
+  background: linear-gradient(135deg, rgba(0,255,200,0.18) 0%, rgba(0,170,255,0.16) 100%);
 }
 
-/* keyboard focus for accessibility */
-.link-btn:focus-visible{
-  outline: none;
-  box-shadow: 0 0 0 4px rgba(0,255,200,0.12), 0 12px 40px rgba(0,0,0,0.5);
-  transform: translateY(0) scale(1.03);
+.link-btn:hover i{ transform: translateX(-6px) scale(1.06); }
+
+/* subtle pulse on hover to give more life */
+.link-btn:hover::before{
+  content:''; position:absolute; inset:0; border-radius:inherit; box-shadow:0 0 40px rgba(0,255,200,0.06) inset; pointer-events:none; opacity:1;
 }
 
-/* shine effect using pseudo-element */
-.link-btn::before{
+/* stronger shine when focused/active */
+.link-btn:active, .link-btn.touch-active{ transform: translateY(-2px) scale(1.02); }
+
+
+.link-btn:focus{
+  outline:3px solid rgba(0,255,200,0.12);
+  outline-offset:4px;
+}
+
+.link-btn::after{
   content:'';
-  position:absolute; left:-60%; top:-20%; width:40%; height:140%;
-  background:linear-gradient(90deg, rgba(255,255,255,0.28), rgba(255,255,255,0.04));
-  transform: translateX(-120%) skewX(-20deg);
-  transition: transform 520ms cubic-bezier(.2,.8,.2,1);
-  pointer-events:none; mix-blend-mode:overlay;
-}
-.link-btn:hover::before{ transform: translateX(220%) skewX(-20deg); }
-
-/* Glass state: applied when intense 3D effect active or on hover */
-.link-btn.glass,
-.link-btn.revealed.glass,
-.link-btn:hover.glass{
-  background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
-  border: 1px solid rgba(255,255,255,0.14);
-  backdrop-filter: blur(8px) saturate(140%);
-  -webkit-backdrop-filter: blur(8px) saturate(140%);
-  box-shadow: 0 10px 30px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.02);
-  color: rgba(230,255,250,0.98);
-}
-
-/* subtle inner highlight for glass */
-.link-btn.glass::after{
-  content:'';
-  position:absolute; inset:0; border-radius:inherit;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), inset 0 -10px 40px rgba(0,255,200,0.02);
+  position:absolute;
+  left: -40%; top:0;
+  width:40%; height:100%;
+  background: linear-gradient(120deg, rgba(255,255,255,0.15), rgba(255,255,255,0.03));
+  transform: skewX(-18deg) translateX(0);
+  transition: transform 0.5s cubic-bezier(.2,.9,.2,1);
   pointer-events:none;
+  opacity:0.6;
 }
+.link-btn:hover::after{ transform: translateX(200%); opacity:0.9 }
 
-.link-btn.glass i{ color: var(--accent-2); filter: drop-shadow(0 6px 10px rgba(0,170,200,0.12)); }
+/* ripple effect for touch interactions */
+.link-btn .ripple{
+  position:absolute;
+  width:18px; height:18px;
+  background: rgba(255,255,255,0.16);
+  border-radius:50%;
+  transform:translate(-50%,-50%) scale(0);
+  pointer-events:none;
+  box-shadow:0 6px 20px rgba(0,0,0,0.3), 0 0 20px rgba(255,255,255,0.06);
+  animation:rippleAnim 520ms cubic-bezier(.2,.9,.2,1) forwards;
+}
+@keyframes rippleAnim{ to{ transform:translate(-50%,-50%) scale(12); opacity:0; } }
 
 /* קרדיט */
 .credit{
   margin-top:20px;
-  font-size:16px;
+  font-size:15px;
   color:rgba(255,255,255,0.7);
   text-align:center;
+  letter-spacing:0.4px;
 }
 
 /* canvas רקע רשת */
@@ -231,11 +291,6 @@ canvas#network-bg{
   100%{transform:translate(var(--x),var(--y)) scale(1); opacity:0;}
 }
 
-/* Respect users who prefer reduced motion */
-@media (prefers-reduced-motion: reduce){
-  *{ transition:none !important; animation:none !important; }
-}
-
 /* התאמות מובייל בלבד */
 @media (max-width:600px){
   .container-frame{
@@ -256,39 +311,83 @@ canvas#network-bg{
     margin-bottom:12px;
   }
   .link-btn{
-    font-size:16px;
-    padding:12px 20px;
-    max-width:260px;
-    gap:10px;
+    font-size:18px;
+    padding:16px 20px;
+    max-width:100%;
+    width:100%;
+    gap:12px;
+    border-radius:14px;
+    min-height:56px;
+    justify-content:flex-start;
+    padding-left:22px;
   }
   .credit{
     font-size:14px;
   }
 }
+
+@media (max-width:420px){
+  body{ padding:10px; }
+  .container-frame{ padding:16px; border-radius:18px; }
+  .profile img{ width:86px; height:86px; }
+  .link-btn{ font-size:16px; padding:14px 18px; min-height:52px; }
+  #hammer{ font-size:54px; top:10px; }
+  .cursor-light{ display:none; }
+  canvas#network-bg{ opacity:0.85; }
+}
+
+/* reduce visual intensity on mobile */
+@media (max-width:800px){
+  body::before, body::after{ filter: blur(80px) saturate(110%); }
+  .container-frame{ box-shadow: 0 8px 26px rgba(0,0,0,0.55); }
+  .link-btn{ box-shadow: 0 8px 20px rgba(0,0,0,0.45) inset; }
+}
+
+/* שיפורי נגישות ומגע - גדלי טאפ טובים יותר למובייל */
+@media (max-width:700px){
+  .container-frame{ width:95%; padding:18px; }
+  .links{ gap:14px; }
+  .link-btn{ max-width:100%; padding:16px 20px; font-size:18px; border-radius:14px; }
+}
+
+/* הסתרת אפקט העכבר במכשירי מגע */
+@media (hover: none) and (pointer: coarse){
+  .cursor-light{ display:none; }
+}
+
+/* אפקט מגע שמחקה hover/shine */
+.link-btn.active{ transform: translateY(-3px) scale(1.02); box-shadow:0 18px 48px rgba(0,255,200,0.18), 0 6px 20px rgba(0,0,0,0.6); }
+.link-btn.touch-active::after{ transform: translateX(200%); opacity:0.95; transition: transform 0.28s ease; }
+
+/* למשתמשים שמעדיפים תנועה מופחתת */
+@media (prefers-reduced-motion: reduce){
+  *{ transition: none !important; animation: none !important; }
+}
 </style>
 </head>
 <body>
 
-<canvas id="network-bg" aria-hidden="true"></canvas>
+<canvas id="network-bg"></canvas>
+<div class="bg-noise" aria-hidden="true"></div>
 <div class="cursor-light" id="cursorLight"></div>
 <i id="hammer" class="fa-solid fa-hammer"></i>
 
 <div class="container-frame" id="containerFrame">
   <div class="profile">
-    <img src="https://image2url.com/r2/default/images/1775305525281-c8ce95d5-a495-449b-bb12-6cae3690be54.jpg" alt="OGYT profile" width="150" height="150" loading="lazy" decoding="async">
+    <img src="https://image2url.com/r2/default/images/1775305525281-c8ce95d5-a495-449b-bb12-6cae3690be54.jpg" alt="Profile">
     <h1>OGYT</h1>
     <div class="subtitle">OGYT קישורים של</div>
   </div>
 
   <div class="links">
-    <a class="link-btn" href="https://www.youtube.com/@orgala15" target="_blank" rel="noopener noreferrer" aria-label="OGYT יוטיוב" title="OGYT - YouTube"><i class="fab fa-youtube"></i> יוטיוב</a>
-    <a class="link-btn" href="https://www.youtube.com/@orgala15?sub_confirmation=1" target="_blank" rel="noopener noreferrer" aria-label="להרשם לערוץ יוטיוב" title="Subscribe on YouTube"><i class="fab fa-youtube"></i> לעשים סאב</a>
-    <a class="link-btn" href="https://streamelements.com/orgala14/tip" target="_blank" rel="noopener noreferrer" aria-label="לתרום" title="Donate (age 18+ or parent permission)"><i class="fas fa-coins"></i> תרומות (באישור הורים או 18+)</a>
-    <a class="link-btn" href="https://discord.gg/PYv8UpRg" target="_blank" rel="noopener noreferrer" aria-label="הצטרף לדיסקורד" title="Discord"><i class="fab fa-discord"></i> דיסקורד</a>
-    <a class="link-btn" href="https://www.tiktok.com/@orgala1781" target="_blank" rel="noopener noreferrer" aria-label="OGYT טיקטוק" title="TikTok"><i class="fab fa-tiktok"></i> טיקטוק</a>
+    <a class="link-btn" href="https://www.youtube.com/@orgala15" target="_blank" rel="noopener noreferrer"><i class="fab fa-youtube"></i> יוטיוב</a>
+    <a class="link-btn" href="https://www.youtube.com/@orgala15?sub_confirmation=1" target="_blank" rel="noopener noreferrer"><i class="fab fa-youtube"></i> לעשים סאב</a>
+    <a class="link-btn" href="https://streamelements.com/orgala14/tip" target="_blank" rel="noopener noreferrer"><i class="fas fa-coins"></i> תרומות (באישור הורים או 18+)</a>
+    <a class="link-btn" href="https://discord.gg/FhgfDndG" target="_blank" rel="noopener noreferrer"><i class="fab fa-discord"></i> דיסקורד</a>
+    <a class="link-btn" href="https://www.tiktok.com/@orgala1781" target="_blank" rel="noopener noreferrer"><i class="fab fa-tiktok"></i> טיקטוק</a>
   </div>
 
-  <div class="credit">created by ZaDAV1D</div>
+  <div class="credit">crate by ZaDAV1D</div>
 </div>
 
 <script>
@@ -310,8 +409,8 @@ function createSpark(x,y,amount=1){
   for(let i=0;i<amount;i++){
     const spark=document.createElement('div');
     spark.className='spark';
-    spark.style.left=(x - 4)+'px';
-    spark.style.top=(y - 4)+'px';
+    spark.style.left=x+'px';
+    spark.style.top=y+'px';
     spark.style.setProperty('--x',(Math.random()-0.5)*150+'px');
     spark.style.setProperty('--y',(Math.random()-0.5)*150+'px');
     document.body.appendChild(spark);
@@ -319,167 +418,173 @@ function createSpark(x,y,amount=1){
   }
 }
 
-// Hammer animation controller to allow cancellation/restart
-let _hammerCtrl = null;
-function cancelHammer(){
-  if(_hammerCtrl){ _hammerCtrl.cancel = true; _hammerCtrl = null; }
-  hammer.style.opacity = 0;
-  hammer.style.transform = 'translate(-50%,-50%) rotate(-45deg)';
-}
-
-function clamp(v, a, b){ return Math.max(a, Math.min(b, v)); }
-
-async function runHammerSequence(ctrl){
-  const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if(prefersReduced) return; // don't run intensive animation
-
-  const small = window.innerWidth < 520 || prefersReduced;
-
-  // helper to position hammer in viewport coords (clamped so it stays visible)
-  function setHammerPos(x, y){
-    const lx = clamp(x, 40, window.innerWidth - 40);
-    const ty = clamp(y, 40, window.innerHeight - 40);
-    hammer.style.left = lx + 'px';
-    hammer.style.top = ty + 'px';
-  }
-
-  // show hammer at center of container
-  const rect = container.getBoundingClientRect();
-  setHammerPos(rect.left + rect.width/2, rect.top + rect.height/2 - 50);
+async function hammerBuild(){
+  // position hammer above the container center
   hammer.style.opacity = 1;
+  const rect = container.getBoundingClientRect();
+  hammer.style.left = rect.left + rect.width/2 + 'px';
+  hammer.style.top = rect.top - 50 + 'px';
 
-  // small helper sleep that checks cancellation
-  const sleep = (ms) => new Promise(r => setTimeout(()=>{ if(ctrl.cancel) r('cancel'); else r(); }, ms));
-
-  // warm-up swings
-  for(let i=0;i<3;i++){
-    if(ctrl.cancel) return;
-    hammer.style.transform='translate(-50%,-50%) rotate(-20deg) scale(1.08)';
-    let s = await sleep(300);
-    if(s === 'cancel') return;
-    hammer.style.transform='translate(-50%,-50%) rotate(10deg) scale(1)';
-    s = await sleep(300);
-    if(s === 'cancel') return;
+  // quick build-in swings
+  for(let i=0;i<2;i++){
+    hammer.style.transform='translate(-50%,-50%) rotate(-20deg) scale(1.06)';
+    await new Promise(r=>setTimeout(r,140));
+    hammer.style.transform='translate(-50%,-50%) rotate(8deg) scale(1)';
+    await new Promise(r=>setTimeout(r,140));
   }
 
-  // reveal container and wait a bit
-  container.style.opacity = 1;
-  container.style.transform = 'scale(1)';
-  let s = await sleep(350);
-  if(s === 'cancel') return;
+  // reveal container gracefully
+  container.classList.add('open');
 
-  // iterate buttons and hammer them in sequence
+  // staggered reveal for buttons with nicer timing
   for(let i=0;i<buttons.length;i++){
-    if(ctrl.cancel) return;
     const btn = buttons[i];
     const br = btn.getBoundingClientRect();
-    // position hammer slightly above button center
-    setHammerPos(br.left + br.width/2, br.top - 36);
-
+    // hammer hits above button
+    hammer.style.left = br.left + br.width/2 + 'px';
+    hammer.style.top = br.top - 40 + 'px';
     hammer.style.transform='translate(-50%,-50%) rotate(-20deg) scale(1.06)';
-    s = await sleep(260); if(s === 'cancel') return;
-    hammer.style.transform='translate(-50%,-50%) rotate(10deg) scale(1)';
-    s = await sleep(260); if(s === 'cancel') return;
+    await new Promise(r=>setTimeout(r,120));
+    hammer.style.transform='translate(-50%,-50%) rotate(8deg) scale(1)';
+    await new Promise(r=>setTimeout(r,120));
 
-    // reveal button with stagger variable and create sparks (fewer on small screens)
-    btn.style.setProperty('--i', i);
+    // reveal button with pop
     btn.classList.add('revealed');
-    createSpark(br.left+br.width/2, br.top+br.height/2, small ? 6 : 14);
+    createSpark(br.left+br.width/2, br.top+br.height/2,10);
   }
 
-  // finish
+  // fade hammer out
   hammer.style.opacity = 0;
 }
 
-function startHammer(){
-  cancelHammer();
-  const ctrl = { cancel: false };
-  _hammerCtrl = ctrl;
-  runHammerSequence(ctrl).catch(()=>{});
-}
+window.addEventListener('load', hammerBuild);
+// prepare buttons for animation state
+for(const b of buttons){ b.setAttribute('aria-hidden','true'); b.style.pointerEvents='none'; }
 
-window.addEventListener('load', ()=> startHammer());
-// restart hammer on resize/scroll so positions stay correct (debounced)
-const _rs = debounce(()=> startHammer(), 420);
-window.addEventListener('resize', _rs);
-window.addEventListener('scroll', _rs, {passive:true});
+// when button revealed remove aria-hidden & enable pointer events
+const observer = new MutationObserver((muts)=>{
+  muts.forEach(m=>{
+    if(m.type==='attributes' && m.target.classList && m.target.classList.contains('revealed')){
+      m.target.removeAttribute('aria-hidden');
+      m.target.style.pointerEvents='auto';
+    }
+  });
+});
+buttons.forEach(b=>observer.observe(b,{attributes:true}));
+
+// parallax for background blobs: update CSS variables based on mouse
+if (typeof window !== 'undefined' && window.document){
+  const root = document.documentElement;
+  let lastX=0, lastY=0;
+  document.addEventListener('mousemove', (e)=>{
+    const mx = (e.clientX - window.innerWidth/2) * 0.02;
+    const my = (e.clientY - window.innerHeight/2) * 0.02;
+    lastX = mx; lastY = my;
+    root.style.setProperty('--mx', mx+'px');
+    root.style.setProperty('--my', my+'px');
+  }, {passive:true});
+
+  // fallback for devices with gyroscope
+  if(window.DeviceOrientationEvent){
+    window.addEventListener('deviceorientation', (ev)=>{
+      const gx = ev.gamma || 0; const gy = ev.beta || 0;
+      const mx = gx * 1.2; const my = gy * 0.9;
+      root.style.setProperty('--mx', mx+'px');
+      root.style.setProperty('--my', my+'px');
+    }, {passive:true});
+  }
+}
 
 // canvas רשת חלקיקים
 const canvas=document.getElementById('network-bg');
 const ctx=canvas.getContext('2d');
-let particles=[];
-function debounce(fn, wait){ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a), wait); }; }
-
 function resizeCanvas(){
-  const dpr = Math.max(1, window.devicePixelRatio || 1);
-  const W = window.innerWidth;
-  const H = window.innerHeight;
-  canvas.width = Math.floor(W * dpr);
-  canvas.height = Math.floor(H * dpr);
-  canvas.style.width = W + 'px';
-  canvas.style.height = H + 'px';
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = Math.round(window.innerWidth * dpr);
+  canvas.height = Math.round(window.innerHeight * dpr);
+  canvas.style.width = window.innerWidth + 'px';
+  canvas.style.height = window.innerHeight + 'px';
   ctx.setTransform(dpr,0,0,dpr,0,0);
-
-  // scale particle count to viewport area for performance
-  const area = W * H;
-  const count = Math.max(30, Math.min(140, Math.floor(area / 12000)));
-  particles = [];
-  for(let i=0;i<count;i++){
-    particles.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-0.5)*0.6,vy:(Math.random()-0.5)*0.6});
-  }
 }
-
+resizeCanvas();
+let particles=[];
+// smoothed parallax targets for gentler motion
+let smoothMx = 0, smoothMy = 0;
+function initParticles(){
+  particles.length=0;
+  const area = window.innerWidth*window.innerHeight;
+  let count = Math.floor(area/120000);
+  if(count<30) count=30;
+  if(count>120) count=120;
+  const w = window.innerWidth;
+  const h = window.innerHeight;
+  for(let i=0;i<count;i++) particles.push({x:Math.random()*w,y:Math.random()*h,vx:(Math.random()-0.5)*1.1,vy:(Math.random()-0.5)*1.1});
+}
+initParticles();
 function drawNetwork(){
-  const W = window.innerWidth;
-  const H = window.innerHeight;
-  ctx.clearRect(0,0,W,H);
-  for(let i=0;i<particles.length;i++){
+  // clear
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  // compute subtle animated offset for the grid (time + parallax from CSS vars)
+  const reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const cs = getComputedStyle(document.documentElement);
+  const targetMx = parseFloat(cs.getPropertyValue('--mx') || '0') || 0;
+  const targetMy = parseFloat(cs.getPropertyValue('--my') || '0') || 0;
+  // smooth the pointer/gyro values for more fluid motion
+  smoothMx += (targetMx - smoothMx) * 0.12;
+  smoothMy += (targetMy - smoothMy) * 0.12;
+  const t = performance.now() / 1000;
+  // faster, smooth drift
+  const driftX = Math.sin(t * 0.9) * 36 + smoothMx * 1.1;
+  const driftY = Math.cos(t * 0.75) * 30 + smoothMy * 1.1;
+
+  // draw subtle background grid lines for depth (lighter on small screens / reduced motion)
+  if(!reduced){
+    ctx.save();
+    ctx.fillStyle = 'rgba(0,255,200,0.04)';
+    const gap = Math.max(28, Math.floor(Math.min(window.innerWidth, window.innerHeight) / 22));
+    const sq = Math.max(6, Math.floor(gap * 0.28));
+    // start positions offset by drifting values for motion (use viewport coords)
+    const startX = Math.round((driftX % gap + gap) % gap) - gap;
+    const startY = Math.round((driftY % gap + gap) % gap) - gap;
+    for(let x = startX; x < window.innerWidth + gap; x += gap){
+      for(let y = startY; y < window.innerHeight + gap; y += gap){
+        // draw a soft square (centered within cell)
+        ctx.globalAlpha = 1.0;
+        ctx.fillRect(x + (gap - sq) / 2, y + (gap - sq) / 2, sq, sq);
+      }
+    }
+    ctx.globalAlpha = 1.0;
+    ctx.restore();
+  }
+
+  // particles and connecting lines
+    for(let i=0, len = particles.length;i<len;i++){
     let p=particles[i];
-    ctx.fillStyle='rgba(0,255,200,0.7)';
-    ctx.beginPath(); ctx.arc(p.x,p.y,2,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle='rgba(var(--particle),0.85)';
+    ctx.beginPath(); ctx.arc(p.x,p.y,1.6,0,Math.PI*2); ctx.fill();
     for(let j=i+1;j<particles.length;j++){
       let q=particles[j];
       let dx=p.x-q.x, dy=p.y-q.y;
       let dist=Math.sqrt(dx*dx+dy*dy);
-      if(dist<120){ ctx.strokeStyle='rgba(0,255,200,'+(0.4-dist/300)+')'; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(q.x,q.y); ctx.stroke();}
+      // increased threshold for more lines, with smoother alpha falloff
+      const maxDist = 160;
+      if(dist < maxDist){
+        const alpha = Math.max(0, 0.55 * (1 - dist / maxDist));
+        ctx.strokeStyle = 'rgba(var(--particle),'+alpha+')';
+        ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(q.x,q.y); ctx.stroke();
+      }
     }
     p.x+=p.vx; p.y+=p.vy;
-    if(p.x<0||p.x>W)p.vx*=-1;
-    if(p.y<0||p.y>H)p.vy*=-1;
+    if(p.x<0||p.x>canvas.width)p.vx*=-1;
+    if(p.y<0||p.y>canvas.height)p.vy*=-1;
   }
+
   requestAnimationFrame(drawNetwork);
 }
-
-resizeCanvas();
 drawNetwork();
-window.addEventListener('resize',debounce(()=>{resizeCanvas();},120));
-
-// Add interactive tilt to buttons (unless user prefers reduced motion)
-const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-if(!prefersReduced){
-  buttons.forEach((btn, idx)=>{
-    // allow CSS to stagger revealed animation
-    btn.style.setProperty('--i', idx);
-
-    btn.addEventListener('pointermove', (ev)=>{
-      const r = btn.getBoundingClientRect();
-      const px = (ev.clientX - r.left) / r.width; // 0..1
-      const py = (ev.clientY - r.top) / r.height; // 0..1
-      const rx = (0.5 - py) * 12; // rotateX degrees
-      const ry = (px - 0.5) * 18; // rotateY degrees
-      btn.style.setProperty('--rx', rx + 'deg');
-      btn.style.setProperty('--ry', ry + 'deg');
-      btn.style.setProperty('--scale', '1.03');
-    }, {passive:true});
-    btn.addEventListener('pointerleave', ()=>{
-      btn.style.setProperty('--rx', '0deg');
-      btn.style.setProperty('--ry', '0deg');
-      btn.style.setProperty('--scale', '1');
-    });
-  });
-}
-
-
+window.addEventListener('resize',()=>{canvas.width=window.innerWidth;canvas.height=window.innerHeight; initParticles(); } );
 
 // מניעת F12 / Ctrl+Shift+I / Tab / העתקה
 document.addEventListener('keydown', function(e) {
@@ -492,6 +597,35 @@ document.addEventListener('keydown', function(e) {
 document.addEventListener('contextmenu', function(e){ e.preventDefault(); });
 document.addEventListener('dragstart', function(e){ e.preventDefault(); });
 document.addEventListener('selectstart', function(e){ e.preventDefault(); });
+
+// שיפורי מגע ונגישות לכפתורים
+const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+buttons.forEach(btn=>{
+  // keyboard accessibility: add focus style
+  btn.addEventListener('focus', ()=>btn.classList.add('active'));
+  btn.addEventListener('blur', ()=>btn.classList.remove('active'));
+
+  // pointer enter/leave for devices that support hover
+  btn.addEventListener('pointerenter', ()=>{ if(!btn.classList.contains('touching')) btn.classList.add('active'); });
+  btn.addEventListener('pointerleave', ()=>{ btn.classList.remove('active'); btn.classList.remove('touch-active'); });
+
+  // touch handlers to mimic hover + ripple
+  btn.addEventListener('touchstart', (ev)=>{
+    btn.classList.add('touching','active','touch-active');
+    // create ripple
+    const t = ev.touches[0];
+    const rect = btn.getBoundingClientRect();
+    const rx = t.clientX - rect.left;
+    const ry = t.clientY - rect.top;
+    const rip = document.createElement('div'); rip.className='ripple';
+    rip.style.left=rx+'px'; rip.style.top=ry+'px';
+    btn.appendChild(rip);
+    setTimeout(()=>{ rip.remove(); }, 700);
+  }, {passive:true});
+
+  btn.addEventListener('touchend', ()=>{ btn.classList.remove('touching'); if(!prefersReduced) setTimeout(()=>btn.classList.remove('active','touch-active'),150); else { btn.classList.remove('active','touch-active'); } });
+  btn.addEventListener('touchcancel', ()=>{ btn.classList.remove('touching','active','touch-active'); });
+});
 </script>
 </body>
 </html>
